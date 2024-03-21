@@ -3,7 +3,7 @@ package test.ui.tests;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import test.ui.DataGenerator.CategoriesData;
+import test.ui.datagenerator.CategoriesData;
 import test.ui.pageObjects.MainPage;
 import test.ui.properties.PropsHelper;
 
@@ -17,7 +17,18 @@ public class CatalogSectionsTests extends TestBase {
 
     private static final String BASE_URL = "https://www.777555.by/";
     PropsHelper propsHelper = PropsHelper.getInstance();
-
+    @DisplayName("Тест раздела 'Электроника'")
+    @Description("Запрашивает реальный список категорий раздела 'Электроника' и сравнивает с подготовленным списком")
+    @Test
+    public void testComputersAndNetWork() {
+        MainPage mainPage = new MainPage(BASE_URL);
+        login(propsHelper.getProperty("UserLogin"), propsHelper.getProperty("UserPassword"));
+        mainPage.catalogButtonClick();
+        mainPage.computersAndNetworkButtonClick();
+        List<String> actualComputersAndNetworkCategories =
+                $$x("//div[@class='category-item mobile-modal opened']//div[@class='subcategory-name hidden-xs hidden-sm']").texts();
+        assertThat(actualComputersAndNetworkCategories, equalTo(CategoriesData.preparedComputersAndNetworkCategories));
+    }
 
     @DisplayName("Тест раздела 'Электроника'")
     @Description("Запрашивает реальный список категорий раздела 'Электроника' и сравнивает с подготовленным списком")

@@ -1,9 +1,19 @@
-package test.ui.DataGenerator;
+package test.ui.datagenerator;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class CategoriesData {
+    /**
+     * Категории раздела 'Компьютеры и сети' на 21.03.2024
+     */
+    public static final List<String> preparedComputersAndNetworkCategories = Arrays.asList(
+            "Компьютеры и комплектующие",
+            "Ноутбуки и аксессуары",
+            "Периферия",
+            "Сетевое оборудование",
+            "Техника для печати и дизайна",
+            "Игры и программное обеспечение");
     /**
      * Категории раздела 'Электроника' на 21.03.2024
      */

@@ -17,6 +17,7 @@ public class MainPage {
     private final SelenideElement catalogButton = $x("//div[@class='catalog hidden-xs hidden-sm']");
     private final SelenideElement beautyAndSportButton = $x("//li[@data-name='Красота и спорт']/button");
     private final SelenideElement electronicsButton = $x("//li[@data-name='Электроника']/button");
+    private final SelenideElement computersAndNetworkButton = $x("//li[@data-name='Компьютеры и сети']/button");
 
     public void catalogButtonClick() {
         catalogButton.click();
@@ -25,6 +26,7 @@ public class MainPage {
     public void beautyAndSportButtonClick() {
         beautyAndSportButton.click();
     }
+    public void computersAndNetworkButtonClick(){computersAndNetworkButton.click();}
 
     public void electronicsButtonClick() {
         electronicsButton.click();
