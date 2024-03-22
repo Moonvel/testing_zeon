@@ -24,7 +24,6 @@ public class CatalogSectionsTests extends TestBase {
                 Arguments.of("Бытовая техника", CategoriesData.preparedAppliancesCategories)
         );
     }
-
     @DisplayName("Тест разделов")
     @Description("Запрашивает реальный список категорий разделов и сравнивает с подготовленным списком")
     @ParameterizedTest(name = "Проверка раздела: {0}")
@@ -39,10 +38,12 @@ public class CatalogSectionsTests extends TestBase {
 
     private static Stream<Arguments> subCategoryProvider() {
         return Stream.of(
-                Arguments.of("Красота и спорт", "Тренажеры и инвентарь", CategoriesData.preparedEquipmentSubCategories)
+                Arguments.of("Красота и спорт", "Тренажеры и инвентарь", CategoriesData.preparedEquipmentSubCategories),
+                Arguments.of("Работа и офис", "Издательство и печать", CategoriesData.preparedPublishingAndPrinting),
+                Arguments.of("Авто и Мото", "Автоэлектроника", CategoriesData.preparedAutoelectronics),
+                Arguments.of("Детям и мамам", "Игры на улице и спорт", CategoriesData.preparedOutdoorGamesAndSports)
         );
     }
-
     @DisplayName("Тест подкатегорий")
     @Description("Запрашивает реальный список подкатегорий {1} в категории {0} и сравнивает с подготовленным списком")
     @ParameterizedTest(name = "Проверка подкатегории: {1}")
