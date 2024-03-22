@@ -3,33 +3,31 @@
  */
 package test.ui.pageObjects;
 
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import test.ui.properties.PropsHelper;
 
-import static com.codeborne.selenide.Selenide.$x;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 
 public class MainPage {
 
-    public MainPage(String url) {
-        open(url);
+    PropsHelper propsHelper = PropsHelper.getInstance();
+
+    public MainPage() {
+        open(propsHelper.getProperty("BASE_URL"));
     }
 
     private final SelenideElement catalogButton = $x("//div[@class='catalog hidden-xs hidden-sm']");
-    private final SelenideElement beautyAndSportButton = $x("//li[@data-name='Красота и спорт']/button");
-    private final SelenideElement electronicsButton = $x("//li[@data-name='Электроника']/button");
-    private final SelenideElement computersAndNetworkButton = $x("//li[@data-name='Компьютеры и сети']/button");
+    public ElementsCollection actualCategories = $$x("//div[@class='category-item mobile-modal opened']//div[contains(@class, 'subcategory-name')]");
+    public ElementsCollection actualSubCategories = $$x("//a[contains(@href, 'trenazhery_i_inventar')]");
 
     public void catalogButtonClick() {
         catalogButton.click();
     }
 
-    public void beautyAndSportButtonClick() {
-        beautyAndSportButton.click();
+    public void catalogCategoryButtonClick(String catalogCategoryButtonName) {
+        $x(String.format("//li[@data-name='%s']/button", catalogCategoryButtonName)).click();
     }
-    public void computersAndNetworkButtonClick(){computersAndNetworkButton.click();}
 
-    public void electronicsButtonClick() {
-        electronicsButton.click();
-    }
 }
 

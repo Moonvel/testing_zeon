@@ -5,68 +5,51 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import test.ui.datagenerator.CategoriesData;
 import test.ui.pageObjects.MainPage;
-import test.ui.properties.PropsHelper;
 
-import java.util.List;
-
-import static com.codeborne.selenide.Selenide.$$x;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class CatalogSectionsTests extends TestBase {
 
-    private static final String BASE_URL = "https://www.777555.by/";
-    PropsHelper propsHelper = PropsHelper.getInstance();
-    @DisplayName("Тест раздела 'Электроника'")
-    @Description("Запрашивает реальный список категорий раздела 'Электроника' и сравнивает с подготовленным списком")
+
+    @DisplayName("Тест раздела 'Компьютеры и сети'")
+    @Description("Запрашивает реальный список категорий раздела 'Компьютеры и сети' и сравнивает с подготовленным списком")
     @Test
     public void testComputersAndNetWork() {
-        MainPage mainPage = new MainPage(BASE_URL);
-        login(propsHelper.getProperty("UserLogin"), propsHelper.getProperty("UserPassword"));
+        MainPage mainPage = new MainPage();
         mainPage.catalogButtonClick();
-        mainPage.computersAndNetworkButtonClick();
-        List<String> actualComputersAndNetworkCategories =
-                $$x("//div[@class='category-item mobile-modal opened']//div[@class='subcategory-name hidden-xs hidden-sm']").texts();
-        assertThat(actualComputersAndNetworkCategories, equalTo(CategoriesData.preparedComputersAndNetworkCategories));
+        mainPage.catalogCategoryButtonClick("Компьютеры и сети");
+        assertThat(mainPage.actualCategories.texts(), equalTo(CategoriesData.preparedComputersAndNetworkCategories));
     }
 
     @DisplayName("Тест раздела 'Электроника'")
     @Description("Запрашивает реальный список категорий раздела 'Электроника' и сравнивает с подготовленным списком")
     @Test
     public void testCatalogElectronics() {
-        MainPage mainPage = new MainPage(BASE_URL);
-        login(propsHelper.getProperty("UserLogin"), propsHelper.getProperty("UserPassword"));
+        MainPage mainPage = new MainPage();
         mainPage.catalogButtonClick();
-        mainPage.electronicsButtonClick();
-        List<String> actualElectronicsCategories =
-                $$x("//div[@class='category-item mobile-modal opened']//div[@class='subcategory-name hidden-xs hidden-sm']").texts();
-        assertThat(actualElectronicsCategories, equalTo(CategoriesData.preparedElectronicsCategories));
+        mainPage.catalogCategoryButtonClick("Электроника");
+        assertThat(mainPage.actualCategories.texts(), equalTo(CategoriesData.preparedElectronicsCategories));
     }
 
     @DisplayName("Тест раздела 'Красота и Спорт'")
     @Description("Запрашивает реальный список категорий раздела 'Красота и Спорт' и сравнивает с подготовленным списком")
     @Test
     public void testCatalogBeautyAndSportSection() {
-        MainPage mainPage = new MainPage(BASE_URL);
-        login(propsHelper.getProperty("UserLogin"), propsHelper.getProperty("UserPassword"));
+        MainPage mainPage = new MainPage();
         mainPage.catalogButtonClick();
-        mainPage.beautyAndSportButtonClick();
-        List<String> actualBeautyAndSportCategories =
-                $$x("//div[@class='category-item mobile-modal opened']//div[@class='subcategory-name hidden-xs hidden-sm']").texts();
-        assertThat(actualBeautyAndSportCategories, equalTo(CategoriesData.preparedBeautyAndSportCategories));
+        mainPage.catalogCategoryButtonClick("Красота и спорт");
+        assertThat(mainPage.actualCategories.texts(), equalTo(CategoriesData.preparedBeautyAndSportCategories));
     }
 
     @DisplayName("Тест категории 'Тренажеры и инвентарь'")
-    @Description("Запрашивает реальный список подкатегорий категории 'Тренажеры и инвентарь' и сравнивает с подготовленным списком")
+    @Description("Запрашивает реальный список подкатегорий 'Тренажеры и инвентарь' в категории 'Красота и спорт' и сравнивает с подготовленным списком")
     @Test
     public void testExerciseEquipmentCategory(){
-        MainPage mainPage = new MainPage(BASE_URL);
-        login(propsHelper.getProperty("UserLogin"), propsHelper.getProperty("UserPassword"));
+        MainPage mainPage = new MainPage();
         mainPage.catalogButtonClick();
-        mainPage.beautyAndSportButtonClick();
-        List<String> actualEquipmentSubCategories =
-        $$x("//a[contains(@href, 'trenazhery_i_inventar')]").texts();
-        assertThat(actualEquipmentSubCategories, equalTo(CategoriesData.preparedEquipmentSubCategories));
+        mainPage.catalogCategoryButtonClick("Красота и спорт");
+        assertThat(mainPage.actualSubCategories.texts(), equalTo(CategoriesData.preparedEquipmentSubCategories));
     }
 }
 

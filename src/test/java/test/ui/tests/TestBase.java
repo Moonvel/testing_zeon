@@ -2,19 +2,24 @@ package test.ui.tests;
 
 import com.codeborne.selenide.Configuration;
 import org.junit.jupiter.api.BeforeAll;
+import test.ui.properties.PropsHelper;
 
 import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.Selenide.open;
 
 
 public class TestBase {
 
     @BeforeAll
     static void init() {
+        PropsHelper propsHelper = PropsHelper.getInstance();
         Configuration.browser = "chrome";
         Configuration.browserSize = "1920x1080";
+        open(propsHelper.getProperty("BASE_URL"));
+        login(propsHelper.getProperty("UserLogin"), propsHelper.getProperty("UserPassword"));
     }
 
-    protected void login(String user, String password) {
+    protected static void login(String user, String password) {
         //$("div.panel-auth.hidden-xs.hidden-sm > button").click();
         $x("//div[@class='panel-auth hidden-xs hidden-sm']/button").click();
         if ($x("//a[@href='#dialog_login']").exists()) {
