@@ -19,12 +19,15 @@ public class MainPage {
 
     private final SelenideElement catalogButton = $x("//div[@class='catalog hidden-xs hidden-sm']");
     public ElementsCollection actualCategories = $$x("//div[@class='category-item mobile-modal opened']//div[contains(@class, 'subcategory-name')]");
-    public ElementsCollection actualSubCategories = $$x("//a[contains(@href, 'trenazhery_i_inventar')]");
+
 
     public void catalogButtonClick() {
         catalogButton.click();
     }
 
+    public ElementsCollection actualSubCategories(String subCategory){
+        return $$x(String.format("//div[@class='subcategory-item mobile-modal' and @data-name='%s']//li[@class='menu-item']",subCategory));
+    }
     public void catalogCategoryButtonClick(String catalogCategoryButtonName) {
         $x(String.format("//li[@data-name='%s']/button", catalogCategoryButtonName)).click();
     }

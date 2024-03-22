@@ -28,6 +28,18 @@ public class CategoriesData {
             "Фото- и видеотехника",
             "Игровая зона");
     /**
+     * Категории раздела 'Бытовая техника' на 22.03.2024
+     */
+    public static final List<String> preparedAppliancesCategories = Arrays.asList(
+            "Встраиваемая техника",
+            "Климатическая техника",
+            "Крупногабаритная техника",
+            "Подготовка и обработка продуктов",
+            "Приготовление кофе и чая",
+            "Приготовление пищи",
+            "Уборка, уход за одеждой, пошив",
+            "Уход за волосами и телом");
+    /**
      * Категории раздела 'Красота и спрорт' на 21.03.2024
      */
     public static final List<String> preparedBeautyAndSportCategories = Arrays.asList(
@@ -44,7 +56,7 @@ public class CategoriesData {
             "Хобби",
             "Гигиена и уход");
     /**
-     * Подкатегории категории'Тренажеры и инвентарь' на 21.03.2024
+     * Подкатегория 'Тренажеры и инвентарь' в 'Красота и спорт' категории на 21.03.2024
      */
     public static final List<String> preparedEquipmentSubCategories = Arrays.asList(
             "Беговые дорожки",
