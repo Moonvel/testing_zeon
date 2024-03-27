@@ -1,7 +1,11 @@
 package test.ui.tests;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,6 +15,7 @@ import test.ui.pageObjects.MainPage;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.codeborne.selenide.Selenide.$x;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -24,6 +29,7 @@ public class CatalogSectionsTests extends TestBase {
                 Arguments.of("Бытовая техника", CategoriesData.preparedAppliancesCategories)
         );
     }
+
     @DisplayName("Тест разделов")
     @Description("Запрашивает реальный список категорий разделов и сравнивает с подготовленным списком")
     @ParameterizedTest(name = "Проверка раздела: {0}")
@@ -44,15 +50,47 @@ public class CatalogSectionsTests extends TestBase {
                 Arguments.of("Детям и мамам", "Игры на улице и спорт", CategoriesData.preparedOutdoorGamesAndSports)
         );
     }
+
     @DisplayName("Тест подкатегорий")
     @Description("Запрашивает реальный список подкатегорий {1} в категории {0} и сравнивает с подготовленным списком")
     @ParameterizedTest(name = "Проверка подкатегории: {1}")
     @MethodSource("subCategoryProvider")
-    public void categoryTest(String category, String subCategory, List<String> expectedSubCategories){
+    public void categoryTest(String category, String subCategory, List<String> expectedSubCategories) {
         MainPage mainPage = new MainPage();
         mainPage.catalogButtonClick();
         mainPage.catalogCategoryButtonClick(category);
         assertThat(mainPage.actualSubCategories(subCategory).texts(), equalTo(expectedSubCategories));
     }
+
+    @DisplayName("Проверка корректности отображения товара на странице")
+    @Description("Происхоит переход на страницу с товарами, отображаются товары только в наличии. Проверка наличия наименования бренда в названии товара, проверка плашки 'Есть в наличии'")
+    @Test
+    public void labelCatalog_settings_instockTest() {
+        MainPage mainPage = new MainPage();
+        mainPage.catalogButtonClick();
+        mainPage.catalogCategoryButtonClick("Компьютеры и сети");
+        mainPage.subCategoryItemClick("Принтеры и МФУ");
+        mainPage.checkBoxBrandClick("PANTUM");
+        mainPage.inStockButtonClick();
+        $x("//span[@class='help']").shouldNotHave(Condition.appear); //ожидание, пока останутся только товары "в наличии"
+        ElementsCollection goods = mainPage.actualOnPageGoods();
+        for (SelenideElement element : goods) {
+            System.out.println(element.text());
+            element.shouldHave(Condition.text("Pantum"));
+            $x("//span[@class='catalog-item-stock instock_yes']").shouldBe(Condition.visible);
+        }
+    }
+
+    @Test
+    public void checkingPriceInCart() {
+        MainPage mainPage = new MainPage();
+        mainPage.catalogButtonClick();
+        mainPage.catalogCategoryButtonClick("Компьютеры и сети");
+        mainPage.subCategoryItemClick("SSD");
+        mainPage.inStockButtonClick();
+        $x("//span[@class='help']").shouldNotHave(Condition.appear); //ожидание, пока останутся только товары "в наличии"
+
+    }
 }
+
 
