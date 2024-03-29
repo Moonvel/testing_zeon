@@ -4,7 +4,6 @@
 package test.ui.pageObjects;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import test.ui.properties.PropsHelper;
 
@@ -25,29 +24,20 @@ public class MainPage {
     public void catalogButtonClick() {
         catalogButton.click();
     }
+
     public void catalogCategoryButtonClick(String catalogCategoryButtonName) {
         $x(String.format("//li[@data-name='%s']/button", catalogCategoryButtonName)).click();
     }
-    public void subCategoryItemClick(String item){
+
+    public void subCategoryItemClick(String item) {
         $x(String.format("//a[contains(text(), '%s')]", item)).click();
     }
-    public void checkBoxBrandClick(String brand){
-        $x(String.format("//li[.//span[contains(text(), '%s')]]", brand)).click();
-    }
-    public void inStockButtonClick() {
-        Selenide.$("#catalog_settings_instock").click();
+
+    public ElementsCollection actualSubCategories(String subCategory) {
+        return $$x(String.format("//div[@class='subcategory-item mobile-modal' and @data-name='%s']//li[@class='menu-item']", subCategory));
     }
 
-    public ElementsCollection actualSubCategories(String subCategory){
-        return $$x(String.format("//div[@class='subcategory-item mobile-modal' and @data-name='%s']//li[@class='menu-item']",subCategory));
+    public void basketButtonClick() {
+        $x("//a[@href='/cart.php?id=']").click();
     }
-    public ElementsCollection actualOnPageGoods() {
-        return $$x("//div[@class='catalog-item-title']/a");
-    }
-
-
-
-
-
 }
-

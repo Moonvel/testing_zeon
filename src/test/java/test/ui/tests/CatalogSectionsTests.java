@@ -10,16 +10,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import test.ui.datagenerator.CategoriesData;
+import test.ui.model.ItemModel;
+import test.ui.pageObjects.BasketPage;
+import test.ui.pageObjects.ItemsPage;
 import test.ui.pageObjects.MainPage;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.Selenide.sleep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class CatalogSectionsTests extends TestBase {
+    ItemsPage itemsPage = new ItemsPage();
+    BasketPage basketPage = new BasketPage();
 
     private static Stream<Arguments> categoryProvider() {
         return Stream.of(
@@ -70,10 +76,11 @@ public class CatalogSectionsTests extends TestBase {
         mainPage.catalogButtonClick();
         mainPage.catalogCategoryButtonClick("Компьютеры и сети");
         mainPage.subCategoryItemClick("Принтеры и МФУ");
-        mainPage.checkBoxBrandClick("PANTUM");
-        mainPage.inStockButtonClick();
-        $x("//span[@class='help']").shouldNotHave(Condition.appear); //ожидание, пока останутся только товары "в наличии"
-        ElementsCollection goods = mainPage.actualOnPageGoods();
+        itemsPage.checkBoxBrandClick("PANTUM");
+        itemsPage.inStockButtonActivateClick();
+        $x("//span[@class='help']").shouldNotBe(Condition.visible); //ожидание, пока останутся только товары "в наличии"
+        sleep(1000);
+        ElementsCollection goods = itemsPage.actualOnPageGoods();
         for (SelenideElement element : goods) {
             System.out.println(element.text());
             element.shouldHave(Condition.text("Pantum"));
@@ -82,15 +89,22 @@ public class CatalogSectionsTests extends TestBase {
     }
 
     @Test
-    public void checkingPriceInCart() {
+    public void checkingPriceInCartTest() {
         MainPage mainPage = new MainPage();
         mainPage.catalogButtonClick();
         mainPage.catalogCategoryButtonClick("Компьютеры и сети");
         mainPage.subCategoryItemClick("SSD");
-        mainPage.inStockButtonClick();
-        $x("//span[@class='help']").shouldNotHave(Condition.appear); //ожидание, пока останутся только товары "в наличии"
-
+        itemsPage.inStockButtonActivateClick();
+        $x("//input[@name='priceTo']").setValue("100").pressEnter();
+        sleep(2000);
+        List<ItemModel> listOfAddedToBasketItems = basketPage.listOfAddedToBasketItems(65.0, 2);
+        mainPage.basketButtonClick();
+        List<ItemModel> listOfActualInBasketItems = basketPage.listOfActualInBasketItems();
+        assertThat(listOfActualInBasketItems, equalTo(listOfAddedToBasketItems));
     }
 }
+
+
+
 
 
