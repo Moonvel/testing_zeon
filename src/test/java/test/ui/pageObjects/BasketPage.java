@@ -4,18 +4,16 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import test.ui.model.ItemModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
-import static com.codeborne.selenide.Selenide.$$x;
+import static com.codeborne.selenide.Selenide.*;
 
 public class BasketPage {
     Random random = new Random();
 
-    public List<ItemModel> listOfActualInBasketItems() {
+    public Set<ItemModel> listOfActualInBasketItems() {
         ElementsCollection actualInBasketItems = $$x("//main[@class='content flx-main flx-m-12']//div[@class='cart-item flex valign-center']");
-        List<ItemModel> itemModelsList = new ArrayList<>();
+        Set<ItemModel> itemModelsList = new HashSet<>();
         for (SelenideElement item : actualInBasketItems) {
             String name = item.$x(".//div[@class='cart-item-product-title']").text();
             Double price = Double.parseDouble(item.$x(".//div[@class='cart-item-price']")
@@ -25,10 +23,14 @@ public class BasketPage {
         }
         return itemModelsList;
     }
-
-    public List<ItemModel> listOfAddedToBasketItems(Double maxPrice, int count) {
+    /**
+     * Создается ElementCollection всех товаров на страницы и из него создается новая коллекция с подходящей максимальной ценой
+     * Выбирается два товара, из имеющих подходящую цену и добавляются в корзину
+     */
+    public Set<ItemModel> listOfAddedToBasketItems(Double maxPrice, int count) {
+        $x("//input[@name='priceTo']").setValue(Double.toString(maxPrice)).pressEnter();
+        sleep(2000);
         ElementsCollection allItems = $$x("//div[@class='catalog-item']");
-        List<ItemModel> itemModelsList = new ArrayList<>();
         List<SelenideElement> belowPriceItems = new ArrayList<>();
         for (SelenideElement item : allItems) {
             double itemPrice = Double.parseDouble(item.$x(".//div[@class='catalog-item-price']").getText().replace(" руб", "").replace(",", "."));
@@ -36,6 +38,8 @@ public class BasketPage {
                 belowPriceItems.add(item);
             }
         }
+
+        Set<ItemModel> itemModelsList = new HashSet<>();
         for (int i = 0; i < count; i++) {
             int randomIndex = random.nextInt(belowPriceItems.size());
             SelenideElement randomElement = belowPriceItems.get(randomIndex);
@@ -48,6 +52,7 @@ public class BasketPage {
 
         return itemModelsList;
     }
+
 
 
 }

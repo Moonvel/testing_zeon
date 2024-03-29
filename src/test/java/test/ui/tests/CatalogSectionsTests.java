@@ -16,6 +16,7 @@ import test.ui.pageObjects.ItemsPage;
 import test.ui.pageObjects.MainPage;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.codeborne.selenide.Selenide.$x;
@@ -95,12 +96,16 @@ public class CatalogSectionsTests extends TestBase {
         mainPage.catalogCategoryButtonClick("Компьютеры и сети");
         mainPage.subCategoryItemClick("SSD");
         itemsPage.inStockButtonActivateClick();
-        $x("//input[@name='priceTo']").setValue("100").pressEnter();
         sleep(2000);
-        List<ItemModel> listOfAddedToBasketItems = basketPage.listOfAddedToBasketItems(65.0, 2);
+        Set<ItemModel> listOfAddedToBasketItems = basketPage.listOfAddedToBasketItems(100.0, 2);
+        sleep(2000);
         mainPage.basketButtonClick();
-        List<ItemModel> listOfActualInBasketItems = basketPage.listOfActualInBasketItems();
+        Set<ItemModel> listOfActualInBasketItems = basketPage.listOfActualInBasketItems();
         assertThat(listOfActualInBasketItems, equalTo(listOfAddedToBasketItems));
+        double itemsPricesSum = listOfActualInBasketItems.stream().mapToDouble(ItemModel::getPrice).sum();
+        double basketTotalPricesSum = Double.parseDouble($x("//span[@class='total-clubcard-price summa_car1']")
+                .text().replace("руб", "").replace("коп.", "").replace(" ", ""));
+        assertThat(Math.round(itemsPricesSum), equalTo(Math.round(basketTotalPricesSum)));
     }
 }
 
