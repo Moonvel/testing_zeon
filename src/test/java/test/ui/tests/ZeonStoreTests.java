@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.codeborne.selenide.Selenide.$x;
 import static com.codeborne.selenide.Selenide.sleep;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 public class ZeonStoreTests extends TestBase {
@@ -70,44 +70,47 @@ public class ZeonStoreTests extends TestBase {
         assertThat(mainPage.actualSubCategories(subCategory).texts(), equalTo(expectedSubCategories));
     }
 
+    private static Stream<Arguments> instockTestProvider(){
+        return Stream.of(
+                Arguments.of("Компьютеры и сети", "Принтеры и МФУ", "PANTUM"),
+                Arguments.of("Компьютеры и сети", "SSD", "KINGSTON"),
+                Arguments.of("Дом и сад", "IP-камеры", "XIAOMI"),
+                Arguments.of("Электроника", "Зарядные устройства", "APPLE")
+        );
+    }
     @DisplayName("Проверка корректности отображения товара на странице")
     @Description("Происхоит переход на страницу с товарами, отображаются товары только в наличии. Проверка наличия наименования бренда в названии товара, проверка плашки 'Есть в наличии'")
-    @Test
-    public void labelCatalog_settings_instockTest() {
+    @ParameterizedTest(name = "Проверка корректности отображения товаров бренда {2} на странице")
+    @MethodSource("instockTestProvider")
+    public void labelCatalog_settings_instockTest(String category, String menu_item, String brand) {
         MainPage mainPage = new MainPage();
-        mainPage.catalogButtonClick();
-        mainPage.catalogCategoryButtonClick("Компьютеры и сети");
-        mainPage.subCategoryItemClick("Принтеры и МФУ");
-        itemsPage.checkBoxBrandClick("PANTUM");
-        itemsPage.inStockButtonActivateClick();
-        $x("//span[@class='help']").shouldNotBe(Condition.visible); //ожидание, пока останутся только товары "в наличии"
-        sleep(1000);
-        ElementsCollection goods = itemsPage.actualOnPageGoods();
-        for (SelenideElement element : goods) {
-            System.out.println(element.text());
-            element.shouldHave(Condition.text("Pantum"));
-            $x("//span[@class='catalog-item-stock instock_yes']").shouldBe(Condition.visible);
+        mainPage.subCategoryItemClickTest(category, menu_item);
+        itemsPage.filtration(brand, true);
+        ElementsCollection items = itemsPage.actualOnPageItems();
+        for (SelenideElement item : items) {
+            System.out.println(item.text());
+            item.$x("./..//span[@class='catalog-item-stock instock_yes']").shouldBe(Condition.visible);
+            assertThat("Текст элемента не содержит названия бренда", item.text().toLowerCase(), containsString(brand.toLowerCase()));
         }
+        itemsPage.checkBoxBrandClick(brand);
     }
+
     @DisplayName("Проверка корректности добавления товаров в корзину")
     @Description("Происходит переход на страницу с товарами, выбирается нужное число случайных товаров на странице, " +
             "происходит проверка добавленных товаров и товаров, находящихся в корзине, проверка общей суммы корзины")
     @Test
     public void checkingPriceInCartTest() {
         MainPage mainPage = new MainPage();
-        mainPage.catalogButtonClick();
-        mainPage.catalogCategoryButtonClick("Компьютеры и сети");
-        mainPage.subCategoryItemClick("SSD");
-        itemsPage.inStockButtonActivateClick();
-        List<ItemModel> listOfAddedToBasketItems = basketPage.listOfAddedToBasketItems(100.0, 7);
-        double itemsPricesSum = listOfAddedToBasketItems.stream().mapToDouble(ItemModel::getPrice).sum();
+        mainPage.subCategoryItemClickTest("Компьютеры и сети","SSD");
+        itemsPage.filtration("SILICON-POWER", false);
+        List<ItemModel> listOfAddedToBasketItems = basketPage.addedToBasketItems(100.0, 7);
+        double itemsPricesSum = basketPage.sumOfItems(listOfAddedToBasketItems);
         Set<ItemModel> setOfAddedToBasketItems = new HashSet<>(listOfAddedToBasketItems);
         sleep(2000);
         mainPage.basketButtonClick();
         Set<ItemModel> setOfActualInBasketItems = basketPage.listOfActualInBasketItems();
         assertThat(setOfAddedToBasketItems, equalTo(setOfActualInBasketItems));
-        double basketTotalPricesSum = Double.parseDouble($x("//span[@class='total-clubcard-price summa_car1']")
-                .text().replace("руб", "").replace("коп.", "").replace(" ", ""));
+        double basketTotalPricesSum = basketPage.basketTotalPrice();
         assertThat(Math.round(itemsPricesSum), equalTo(Math.round(basketTotalPricesSum)));
     }
 }
