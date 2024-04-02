@@ -15,6 +15,7 @@ import test.ui.pageObjects.BasketPage;
 import test.ui.pageObjects.ItemsPage;
 import test.ui.pageObjects.MainPage;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -24,7 +25,7 @@ import static com.codeborne.selenide.Selenide.sleep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class CatalogSectionsTests extends TestBase {
+public class ZeonStoreTests extends TestBase {
     ItemsPage itemsPage = new ItemsPage();
     BasketPage basketPage = new BasketPage();
 
@@ -88,7 +89,9 @@ public class CatalogSectionsTests extends TestBase {
             $x("//span[@class='catalog-item-stock instock_yes']").shouldBe(Condition.visible);
         }
     }
-
+    @DisplayName("Проверка корректности добавления товаров в корзину")
+    @Description("Происходит переход на страницу с товарами, выбирается нужное число случайных товаров на странице, " +
+            "происходит проверка добавленных товаров и товаров, находящихся в корзине, проверка общей суммы корзины")
     @Test
     public void checkingPriceInCartTest() {
         MainPage mainPage = new MainPage();
@@ -96,13 +99,13 @@ public class CatalogSectionsTests extends TestBase {
         mainPage.catalogCategoryButtonClick("Компьютеры и сети");
         mainPage.subCategoryItemClick("SSD");
         itemsPage.inStockButtonActivateClick();
-        sleep(2000);
-        Set<ItemModel> listOfAddedToBasketItems = basketPage.listOfAddedToBasketItems(100.0, 2);
+        List<ItemModel> listOfAddedToBasketItems = basketPage.listOfAddedToBasketItems(100.0, 7);
+        double itemsPricesSum = listOfAddedToBasketItems.stream().mapToDouble(ItemModel::getPrice).sum();
+        Set<ItemModel> setOfAddedToBasketItems = new HashSet<>(listOfAddedToBasketItems);
         sleep(2000);
         mainPage.basketButtonClick();
-        Set<ItemModel> listOfActualInBasketItems = basketPage.listOfActualInBasketItems();
-        assertThat(listOfActualInBasketItems, equalTo(listOfAddedToBasketItems));
-        double itemsPricesSum = listOfActualInBasketItems.stream().mapToDouble(ItemModel::getPrice).sum();
+        Set<ItemModel> setOfActualInBasketItems = basketPage.listOfActualInBasketItems();
+        assertThat(setOfAddedToBasketItems, equalTo(setOfActualInBasketItems));
         double basketTotalPricesSum = Double.parseDouble($x("//span[@class='total-clubcard-price summa_car1']")
                 .text().replace("руб", "").replace("коп.", "").replace(" ", ""));
         assertThat(Math.round(itemsPricesSum), equalTo(Math.round(basketTotalPricesSum)));

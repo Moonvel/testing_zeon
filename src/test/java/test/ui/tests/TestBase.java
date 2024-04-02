@@ -14,7 +14,6 @@ public class TestBase {
     static void init() {
         PropsHelper propsHelper = PropsHelper.getInstance();
         Configuration.browser = "chrome";
-        Configuration.browserSize = "1920x1080";
         open(propsHelper.getProperty("BASE_URL"));
         login(propsHelper.getProperty("UserLogin"), propsHelper.getProperty("UserPassword"));
     }
