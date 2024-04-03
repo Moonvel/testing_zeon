@@ -5,7 +5,6 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Description;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -59,15 +58,10 @@ public class ZeonStoreTests extends TestBase {
         );
     }
 
-    @DisplayName("Тест подкатегорий")
-    @Description("Запрашивает реальный список подкатегорий {1} в категории {0} и сравнивает с подготовленным списком")
-    @ParameterizedTest(name = "Проверка подкатегории: {1}")
-    @MethodSource("subCategoryProvider")
-    public void categoryTest(String category, String subCategory, List<String> expectedSubCategories) {
-        MainPage mainPage = new MainPage();
-        mainPage.catalogButtonClick();
-        mainPage.catalogCategoryButtonClick(category);
-        assertThat(mainPage.actualSubCategories(subCategory).texts(), equalTo(expectedSubCategories));
+    private static Stream<Arguments> checkingPriceInCartTestProvider() {
+        return Stream.of(
+                Arguments.of("Компьютеры и сети", "SSD", "SILICON-POWER", 200.0)
+        );
     }
 
     private static Stream<Arguments> instockTestProvider(){
@@ -78,13 +72,25 @@ public class ZeonStoreTests extends TestBase {
                 Arguments.of("Электроника", "Зарядные устройства", "APPLE")
         );
     }
+
+    @DisplayName("Тест подкатегорий")
+    @Description("Запрашивает реальный список подкатегории и сравнивает с подготовленным списком")
+    @ParameterizedTest(name = "Проверка подкатегории: {1}")
+    @MethodSource("subCategoryProvider")
+    public void categoryTest(String category, String subCategory, List<String> expectedSubCategories) {
+        MainPage mainPage = new MainPage();
+        mainPage.catalogButtonClick();
+        mainPage.catalogCategoryButtonClick(category);
+        assertThat(mainPage.actualSubCategories(subCategory).texts(), equalTo(expectedSubCategories));
+    }
+
     @DisplayName("Проверка корректности отображения товара на странице")
     @Description("Происхоит переход на страницу с товарами, отображаются товары только в наличии. Проверка наличия наименования бренда в названии товара, проверка плашки 'Есть в наличии'")
     @ParameterizedTest(name = "Проверка корректности отображения товаров бренда {2} на странице")
     @MethodSource("instockTestProvider")
     public void labelCatalog_settings_instockTest(String category, String menu_item, String brand) {
         MainPage mainPage = new MainPage();
-        mainPage.subCategoryItemClickTest(category, menu_item);
+        mainPage.menuItemClick(category, menu_item);
         itemsPage.filtration(brand, true);
         ElementsCollection items = itemsPage.actualOnPageItems();
         for (SelenideElement item : items) {
@@ -98,19 +104,20 @@ public class ZeonStoreTests extends TestBase {
     @DisplayName("Проверка корректности добавления товаров в корзину")
     @Description("Происходит переход на страницу с товарами, выбирается нужное число случайных товаров на странице, " +
             "происходит проверка добавленных товаров и товаров, находящихся в корзине, проверка общей суммы корзины")
-    @Test
-    public void checkingPriceInCartTest() {
+    @ParameterizedTest(name = "Проверка корректности добавления товаров в корзину")
+    @MethodSource("checkingPriceInCartTestProvider")
+    public void checkingPriceInCartTest(String category, String menu_item, String brand, Double price) {
         MainPage mainPage = new MainPage();
-        mainPage.subCategoryItemClickTest("Компьютеры и сети","SSD");
-        itemsPage.filtration("SILICON-POWER", false);
-        List<ItemModel> listOfAddedToBasketItems = basketPage.addedToBasketItems(100.0, 7);
+        mainPage.menuItemClick(category, menu_item);
+        itemsPage.filtration(brand, false);
+        List<ItemModel> listOfAddedToBasketItems = basketPage.addedToBasketItems(price, 7);
         double itemsPricesSum = basketPage.sumOfItems(listOfAddedToBasketItems);
         Set<ItemModel> setOfAddedToBasketItems = new HashSet<>(listOfAddedToBasketItems);
         sleep(2000);
         mainPage.basketButtonClick();
+        double basketTotalPricesSum = basketPage.basketTotalPrice();
         Set<ItemModel> setOfActualInBasketItems = basketPage.listOfActualInBasketItems();
         assertThat(setOfAddedToBasketItems, equalTo(setOfActualInBasketItems));
-        double basketTotalPricesSum = basketPage.basketTotalPrice();
         assertThat(Math.round(itemsPricesSum), equalTo(Math.round(basketTotalPricesSum)));
     }
 }

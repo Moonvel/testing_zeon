@@ -13,9 +13,13 @@ public class ItemsPage {
     public ElementsCollection actualOnPageItems() {
         return $$x("//div[@class='catalog-item-title']");
     }
+
+    @Step("Нажатие чекбокса фильтрации бренда")
     public void checkBoxBrandClick(String brand) {
         $x(String.format("//li[.//span[contains(text(), '%s')]]", brand)).click();
     }
+
+    @Step("Нажадите слайдора в наличии")
     public void inStockButtonActivateClick() {
         if (!checkBox.isSelected()) {
             $x("//input[@id='catalog_settings_instock']").click();

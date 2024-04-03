@@ -15,6 +15,9 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class BasketPage {
     Random random = new Random();
+    SelenideElement basketTotalPriceValue = $x("//span[@class='total-clubcard-price summa_car1']");
+    SelenideElement priceToFilter = $x("//input[@name='priceTo']");
+    ElementsCollection onPageItems = $$x("//div[@class='catalog-item']");
 
     @Step("Создание списка товаров находящихся в корзине")
     public Set<ItemModel> listOfActualInBasketItems() {
@@ -34,11 +37,11 @@ public class BasketPage {
      * Создается ElementCollection всех товаров на страницы и из него создается новая коллекция с подходящей максимальной ценой
      * Выбирается два товара, из имеющих подходящую цену и добавляются в корзину
      */
-    @Step("Создание списка товаров с ценой ниже заданной, добавление товаров в корзину")
+    @Step("Создание списка из {1} товаров с ценой ниже {0} руб, добавление товаров в корзину")
     public List<ItemModel> addedToBasketItems(Double maxPrice, int count) {
-        $x("//input[@name='priceTo']").setValue(Double.toString(maxPrice)).pressEnter();
+        priceToFilter.setValue(Double.toString(maxPrice)).pressEnter();
         sleep(2000);
-        ElementsCollection allItems = $$x("//div[@class='catalog-item']");
+        ElementsCollection allItems = onPageItems;
         List<ItemModel> items = new ArrayList<>();
         for (SelenideElement item : allItems) {
             String name = item.$x(".//div[@class='catalog-item-title']").text();
@@ -50,7 +53,7 @@ public class BasketPage {
             }
         }
         List<ItemModel> randomItems = new ArrayList<>();
-        if (count < items.size()) count = items.size();
+        if (count > items.size()) count = items.size();
         for (int i = 0; i < count; i++) {
             int randomIndex = random.nextInt(items.size());
             String name = items.get(randomIndex).getName();
@@ -69,7 +72,7 @@ public class BasketPage {
     }
     @Step("Получение общей стоимости корзины")
     public double basketTotalPrice(){
-        return Double.parseDouble($x("//span[@class='total-clubcard-price summa_car1']")
+        return Double.parseDouble(basketTotalPriceValue
                 .text().replace("руб", "").replace("коп.", "").replace(" ", ""));
     }
 }
