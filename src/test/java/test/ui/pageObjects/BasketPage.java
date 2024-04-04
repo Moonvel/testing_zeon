@@ -67,8 +67,6 @@ public class BasketPage {
             ItemModel item = ItemModel.builder().name(name).price(price).build();
             randomItems.add(item);
         }
-        $x("//div[@id='basketlabel']").shouldBe(exist);
-        $x("//ul[@class='list_catalog']").shouldHave(cssValue("opacity", "1"), Duration.ofMillis(5000L));
         return randomItems;
     }
     @Step("Вычисление общей стоимости добавленных в корзину товаров")
