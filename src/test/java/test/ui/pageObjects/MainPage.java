@@ -32,7 +32,6 @@ public class MainPage {
         $x(String.format("//li[@data-name='%s']/button", catalogCategoryButtonName)).click();
     }
 
-
     public ElementsCollection actualSubCategories(String subCategory) {
         return $$x(String.format("//div[@class='subcategory-item mobile-modal' and @data-name='%s']//li[@class='menu-item']", subCategory));
     }

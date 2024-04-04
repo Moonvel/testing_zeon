@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.codeborne.selenide.Selenide.sleep;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -36,19 +35,6 @@ public class ZeonStoreTests extends TestBase {
                 Arguments.of("Бытовая техника", CategoriesData.preparedAppliancesCategories)
         );
     }
-
-    @DisplayName("Тест разделов")
-    @Description("Запрашивает реальный список категорий разделов и сравнивает с подготовленным списком")
-    @ParameterizedTest(name = "Проверка раздела: {0}")
-    @MethodSource("categoryProvider")
-    public void sectionTest(String section, List<String> expectedCategories) {
-        MainPage mainPage = new MainPage();
-        mainPage.catalogButtonClick();
-        mainPage.catalogCategoryButtonClick(section);
-        assertThat(mainPage.actualCategories.texts(), equalTo(expectedCategories));
-    }
-
-
     private static Stream<Arguments> subCategoryProvider() {
         return Stream.of(
                 Arguments.of("Красота и спорт", "Тренажеры и инвентарь", CategoriesData.preparedEquipmentSubCategories),
@@ -71,6 +57,17 @@ public class ZeonStoreTests extends TestBase {
                 Arguments.of("Дом и сад", "IP-камеры", "XIAOMI"),
                 Arguments.of("Электроника", "Зарядные устройства", "APPLE")
         );
+    }
+
+    @DisplayName("Тест разделов")
+    @Description("Запрашивает реальный список категорий разделов и сравнивает с подготовленным списком")
+    @ParameterizedTest(name = "Проверка раздела: {0}")
+    @MethodSource("categoryProvider")
+    public void sectionTest(String section, List<String> expectedCategories) {
+        MainPage mainPage = new MainPage();
+        mainPage.catalogButtonClick();
+        mainPage.catalogCategoryButtonClick(section);
+        assertThat(mainPage.actualCategories.texts(), equalTo(expectedCategories));
     }
 
     @DisplayName("Тест подкатегорий")
@@ -98,7 +95,7 @@ public class ZeonStoreTests extends TestBase {
             item.$x("./..//span[@class='catalog-item-stock instock_yes']").shouldBe(Condition.visible);
             assertThat("Текст элемента не содержит названия бренда", item.text().toLowerCase(), containsString(brand.toLowerCase()));
         }
-        itemsPage.checkBoxBrandClick(brand);
+
     }
 
     @DisplayName("Проверка корректности добавления товаров в корзину")
@@ -113,7 +110,6 @@ public class ZeonStoreTests extends TestBase {
         List<ItemModel> listOfAddedToBasketItems = basketPage.addedToBasketItems(price, 7);
         double itemsPricesSum = basketPage.sumOfItems(listOfAddedToBasketItems);
         Set<ItemModel> setOfAddedToBasketItems = new HashSet<>(listOfAddedToBasketItems);
-        sleep(2000);
         mainPage.basketButtonClick();
         double basketTotalPricesSum = basketPage.basketTotalPrice();
         Set<ItemModel> setOfActualInBasketItems = basketPage.listOfActualInBasketItems();

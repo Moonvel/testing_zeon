@@ -9,8 +9,7 @@ import test.ui.model.ItemModel;
 import java.time.Duration;
 import java.util.*;
 
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 
 public class BasketPage {
@@ -40,7 +39,8 @@ public class BasketPage {
     @Step("Создание списка из {1} товаров с ценой ниже {0} руб, добавление товаров в корзину")
     public List<ItemModel> addedToBasketItems(Double maxPrice, int count) {
         priceToFilter.setValue(Double.toString(maxPrice)).pressEnter();
-        sleep(2000);
+        $x("//ul[@style]").shouldBe(exist);
+        $x("//ul[@class='list_catalog']").shouldHave(cssValue("opacity", "1"), Duration.ofMillis(5000L));
         ElementsCollection allItems = onPageItems;
         List<ItemModel> items = new ArrayList<>();
         for (SelenideElement item : allItems) {
@@ -64,6 +64,8 @@ public class BasketPage {
             ItemModel item = ItemModel.builder().name(name).price(price).build();
             randomItems.add(item);
         }
+        $x("//div[@id='basketlabel']").shouldBe(exist);
+        $x("//ul[@class='list_catalog']").shouldHave(cssValue("opacity", "1"), Duration.ofMillis(5000L));
         return randomItems;
     }
     @Step("Вычисление общей стоимости добавленных в корзину товаров")

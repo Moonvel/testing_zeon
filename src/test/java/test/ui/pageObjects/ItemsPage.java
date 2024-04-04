@@ -4,8 +4,11 @@ import com.codeborne.selenide.ElementsCollection;
 import io.qameta.allure.Step;
 import org.openqa.selenium.WebElement;
 
-import static com.codeborne.selenide.Condition.disappear;
-import static com.codeborne.selenide.Selenide.*;
+import java.time.Duration;
+
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.$$x;
+import static com.codeborne.selenide.Selenide.$x;
 
 public class ItemsPage {
     WebElement checkBox = $x("//span[@class='ui-checkbox catalog-settings-instock']/input");
@@ -17,6 +20,9 @@ public class ItemsPage {
     @Step("Нажатие чекбокса фильтрации бренда")
     public void checkBoxBrandClick(String brand) {
         $x(String.format("//li[.//span[contains(text(), '%s')]]", brand)).click();
+        $x("//ul[@style]").shouldBe(exist);
+        $x("//ul[@class='list_catalog']").shouldHave(cssValue("opacity", "1"), Duration.ofMillis(5000L));
+        //ожидание пока страница станет непрозрачной после нажатия чекбокса бренда
     }
 
     @Step("Нажадите слайдора в наличии")
@@ -24,17 +30,16 @@ public class ItemsPage {
         if (!checkBox.isSelected()) {
             $x("//input[@id='catalog_settings_instock']").click();
         }
+        $x("//span[@class='help']").should(disappear);
+        //ожидание, пока останутся только товары "в наличии"
     }
     @Step("Фильтрация элементов на странице товаров")
     public void filtration(String brand, boolean useBrandFiltration){
-        inStockButtonActivateClick();
+
         if (useBrandFiltration) {
             checkBoxBrandClick(brand);
-            sleep(2000);
         }
-        $x("//span[@class='help']").should(disappear); //ожидание, пока останутся только товары "в наличии"
-
-
+        inStockButtonActivateClick();
     }
 
 
