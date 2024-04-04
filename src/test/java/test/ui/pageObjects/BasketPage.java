@@ -59,13 +59,13 @@ public class BasketPage {
             String name = items.get(randomIndex).getName();
             $x("//a[text()='"+name+"']/../../..//a[@class='but_car btn block']")
                     .shouldBe(exist, Duration.ofMillis(3000L)).shouldBe(enabled, Duration.ofMillis(3000L)).click(ClickOptions.usingJavaScript());
+            $x("//div[@id='basketlabel']").shouldBe(exist);
+            $x("//ul[@class='list_catalog']").shouldHave(cssValue("opacity", "1"), Duration.ofMillis(5000L));
             Double price =  Double.parseDouble($x("//a[text()='"+name+"']/../../..//div[@class='catalog-item-price']")
                     .text().replace(" руб", "").replace(",", "."));
             ItemModel item = ItemModel.builder().name(name).price(price).build();
             randomItems.add(item);
         }
-        $x("//div[@id='basketlabel']").shouldBe(exist);
-        $x("//ul[@class='list_catalog']").shouldHave(cssValue("opacity", "1"), Duration.ofMillis(5000L));
         return randomItems;
     }
     @Step("Вычисление общей стоимости добавленных в корзину товаров")
