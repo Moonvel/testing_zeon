@@ -35,30 +35,6 @@ public class ZeonStoreTests extends TestBase {
                 Arguments.of("Бытовая техника", CategoriesData.preparedAppliancesCategories)
         );
     }
-    private static Stream<Arguments> subCategoryProvider() {
-        return Stream.of(
-                Arguments.of("Красота и спорт", "Тренажеры и инвентарь", CategoriesData.preparedEquipmentSubCategories),
-                Arguments.of("Работа и офис", "Издательство и печать", CategoriesData.preparedPublishingAndPrinting),
-                Arguments.of("Авто и Мото", "Автоэлектроника", CategoriesData.preparedAutoelectronics),
-                Arguments.of("Детям и мамам", "Игры на улице и спорт", CategoriesData.preparedOutdoorGamesAndSports)
-        );
-    }
-
-    private static Stream<Arguments> checkingPriceInCartTestProvider() {
-        return Stream.of(
-                Arguments.of("Компьютеры и сети", "SSD", "SILICON-POWER", 200.0)
-        );
-    }
-
-    private static Stream<Arguments> instockTestProvider(){
-        return Stream.of(
-                Arguments.of("Компьютеры и сети", "Принтеры и МФУ", "PANTUM"),
-                Arguments.of("Компьютеры и сети", "SSD", "KINGSTON"),
-                Arguments.of("Дом и сад", "IP-камеры", "XIAOMI"),
-                Arguments.of("Электроника", "Зарядные устройства", "APPLE")
-        );
-    }
-
     @DisplayName("Тест разделов")
     @Description("Запрашивает реальный список категорий разделов и сравнивает с подготовленным списком")
     @ParameterizedTest(name = "Проверка раздела: {0}")
@@ -70,6 +46,15 @@ public class ZeonStoreTests extends TestBase {
         assertThat(mainPage.actualCategories.texts(), equalTo(expectedCategories));
     }
 
+
+    private static Stream<Arguments> subCategoryProvider() {
+        return Stream.of(
+                Arguments.of("Красота и спорт", "Тренажеры и инвентарь", CategoriesData.preparedEquipmentSubCategories),
+                Arguments.of("Работа и офис", "Издательство и печать", CategoriesData.preparedPublishingAndPrinting),
+                Arguments.of("Авто и Мото", "Автоэлектроника", CategoriesData.preparedAutoelectronics),
+                Arguments.of("Детям и мамам", "Игры на улице и спорт", CategoriesData.preparedOutdoorGamesAndSports)
+        );
+    }
     @DisplayName("Тест подкатегорий")
     @Description("Запрашивает реальный список подкатегории и сравнивает с подготовленным списком")
     @ParameterizedTest(name = "Проверка подкатегории: {1}")
@@ -81,6 +66,15 @@ public class ZeonStoreTests extends TestBase {
         assertThat(mainPage.actualSubCategories(subCategory).texts(), equalTo(expectedSubCategories));
     }
 
+
+    private static Stream<Arguments> instockTestProvider(){
+        return Stream.of(
+                Arguments.of("Компьютеры и сети", "Принтеры и МФУ", "PANTUM"),
+                Arguments.of("Компьютеры и сети", "SSD", "KINGSTON"),
+                Arguments.of("Дом и сад", "IP-камеры", "XIAOMI"),
+                Arguments.of("Электроника", "Зарядные устройства", "APPLE")
+        );
+    }
     @DisplayName("Проверка корректности отображения товара на странице")
     @Description("Происхоит переход на страницу с товарами, отображаются товары только в наличии. Проверка наличия наименования бренда в названии товара, проверка плашки 'Есть в наличии'")
     @ParameterizedTest(name = "Проверка корректности отображения товаров бренда {2} на странице")
@@ -98,6 +92,12 @@ public class ZeonStoreTests extends TestBase {
 
     }
 
+
+    private static Stream<Arguments> checkingPriceInCartTestProvider() {
+        return Stream.of(
+                Arguments.of("Компьютеры и сети", "SSD", "SILICON-POWER", 200.0)
+        );
+    }
     @DisplayName("Проверка корректности добавления товаров в корзину")
     @Description("Происходит переход на страницу с товарами, выбирается нужное число случайных товаров на странице, " +
             "происходит проверка добавленных товаров и товаров, находящихся в корзине, проверка общей суммы корзины")
