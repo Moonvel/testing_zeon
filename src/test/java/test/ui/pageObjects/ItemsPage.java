@@ -25,7 +25,7 @@ public class ItemsPage {
         //ожидание пока страница станет непрозрачной после нажатия чекбокса бренда
     }
 
-    @Step("Нажадите слайдора в наличии")
+    @Step("Нажатие слайдора в наличии")
     public void inStockButtonActivateClick() {
         if (!checkBox.isSelected()) {
             $x("//input[@id='catalog_settings_instock']").click();
